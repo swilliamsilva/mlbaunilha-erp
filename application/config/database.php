@@ -67,6 +67,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $active_group variable lets you choose which connection group to
 | make active.  By default there is only one group (the 'default' group).
 */
+$db['default'] = array(
+    'hostname' => 'localhost',
+    'username' => 'root',
+    'password' => '',
+    'database' => 'dbmlbaunilha',
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => FALSE,
+    'db_debug' => TRUE,
+);
+
 $active_group = 'default';
 $db['default'] = array(
 	'dsn'	=> '',
