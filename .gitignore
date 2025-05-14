@@ -1,32 +1,30 @@
+# Arquivos do sistema
 .DS_Store
 
+# CodeIgniter
 application/cache/*
 !application/cache/index.html
-
 application/logs/*
 !application/logs/index.html
 
-!application/*/.htaccess
-
-composer.lock
+# Banco de dados de teste
 tests/mocks/database/ci_test.sqlite
 
+# Dependências
+/vendor/
+
+# Documentação
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
-/vendor/
 
-# IDE Files
-#-------------------------
+# IDEs
 /nbproject/
 .idea/*
+*.sublime-*
 
-## Sublime Text cache files
-*.tmlanguage.cache
-*.tmPreferences.cache
-*.stTheme.cache
-*.sublime-workspace
-*.sublime-project
-/tests/tests/
-/tests/results/
+# Configurações sensíveis
+/application/config/database.php
+/application/config/config.php
+/.env

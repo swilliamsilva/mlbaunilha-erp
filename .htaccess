@@ -1,6 +1,27 @@
+# Configurações básicas de segurança
 <IfModule authz_core_module>
     Require all denied
 </IfModule>
 <IfModule !authz_core_module>
     Deny from all
 </IfModule>
+
+Options -Indexes
+
+# Bloqueia acesso a arquivos sensíveis
+<FilesMatch "\.(env|log|sql|htaccess|ini|bak|conf)$">
+    <IfModule authz_core_module>
+        Require all denied
+    </IfModule>
+    <IfModule !authz_core_module>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Bloqueia .git e submodules
+RewriteEngine On
+RewriteRule \.git(/|$) - [R=404,L]
+
+# Redirecionamentos de erro
+ErrorDocument 403 "Acesso negado"
+ErrorDocument 404 "Página não encontrada"

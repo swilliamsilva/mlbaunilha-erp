@@ -1,4 +1,5 @@
 <?php
+putenv("SSL_CERT_FILE=C:/xampp/php/extras/ssl/cacert.pem");
 /**
  * CodeIgniter
  *
