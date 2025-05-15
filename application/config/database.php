@@ -67,36 +67,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $active_group variable lets you choose which connection group to
 | make active.  By default there is only one group (the 'default' group).
 */
-$db['default'] = array(
-    'hostname' => 'localhost',
-    'username' => 'root',
-    'password' => '',
-    'database' => 'dbmlbaunilha',
+$db['default'] = [
+    'dsn'      => '',
+    'hostname' => 'containers-us-west-45.railway.app', //  Host público
+    'username' => getenv('MYSQLUSER'),
+    'password' => getenv('MYSQLPASSWORD'),
+    'database' => getenv('MYSQLDATABASE'),
+    'port'     => 3306,
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,
-    'db_debug' => TRUE,
-);
-
-$active_group = 'default';
-$db['default'] = array(
-	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => '',
-	'password' => '',
-	'database' => '',
-	'dbdriver' => 'mysqli',
-	'dbprefix' => '',
-	'pconnect' => FALSE,
-	'db_debug' => (ENVIRONMENT !== 'production'),
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8',
-	'dbcollat' => 'utf8_general_ci',
-	'swap_pre' => '',
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array(),
-	'save_queries' => TRUE
-);
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt'  => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE
+];

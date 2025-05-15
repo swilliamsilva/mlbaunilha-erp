@@ -1,3 +1,148 @@
+
+# Testes Unitários do CodeIgniter #
+
+### Introdução:
+
+Este é o início da documentação de testes para o CodeIgniter. Ela cobre tanto APIs internas quanto externas e a lógica por trás de suas implementações. Como toda a documentação do CodeIgniter, este arquivo mantém um formato legível e claro para facilitar o design das APIs.
+
+*Primeiro rascunho público: tudo pode mudar!*
+
+### Requisitos
+
+PHPUnit >= 3.5.6
+
+
+vfsStream
+pear channel-discover pear.phpunit.de
+pear channel-discover pear.symfony.com
+pear install phpunit/PHPUnit
+
+pear channel-discover pear.bovigo.org
+pear install bovigo/vfsStream-beta
+
+
+#### Instalação do PEAR e PHPUnit no Ubuntu
+sudo apt-get install php-pear
+pear channel-discover pear.phpunit.de
+pear channel-discover pear.symfony-project.com
+pear channel-discover components.ez.no
+pear channel-discover pear.bovigo.org
+pear install --alldeps phpunit/PHPUnit
+pear install --alldeps bovigo/vfsStream-beta
+
+Execute `phpunit` dentro da pasta `./tests` para iniciar os testes.
+
+## Suites de Teste:
+
+1. Teste de Bootstrap — valida arquivos como common.php
+2. Teste de Sistema — testa os componentes principais isoladamente
+3. Teste de Aplicação — para testar controllers, models, views, etc.
+4. Teste de Pacotes — para bibliotecas ou módulos externos
+
+### Ambiente de Teste:
+
+O arquivo `tests/Bootstrap.php` define as constantes globais como BASEPATH, APPPATH e VIEWPATH, inicializando-as em um sistema de arquivos virtual via vfsStream.
+
+Funções úteis durante os testes:
+
+- `$this->ci_set_config($chave, $valor)` — Configura valores globais do CI
+- `$this->ci_instance($obj)` — Define ou obtém o objeto super global
+- `$this->ci_instance_var($nome, $valor)` — Define atributos no super objeto
+- `$this->ci_core_class($nome)` — Pega classe principal do núcleo (ex: CI_Config)
+- `$this->ci_set_core_class($nome, $obj)` — Define classe principal com mock
+- `$this->ci_vfs_mkdir($nome, $raiz)` — Cria diretório no VFS
+- `$this->ci_vfs_create($arquivo, $conteúdo, $raiz, $caminho)` — Cria arquivos virtuais
+- `$this->ci_vfs_clone($path)` — Clona arquivos reais para o VFS
+- `$this->ci_vfs_path($path, $base)` — Caminho válido no VFS para uso interno
+- `$this->helper($nome)` — Carrega helpers reais
+- `$this->lang($nome)` — Carrega arquivos de idioma reais
+
+### Próximos Passos
+
+- Criar testes unitários para models, helpers e bibliotecas personalizadas
+- Usar mocks para simular configurações e objetos
+- Considerar testes funcionais com ferramentas como Selenium, Cucumber ou Laravel Dusk
+
+"""
+
+translated_path = "/mnt/data/tests/README-PT.md"
+with open(translated_path, "w") as f:
+    f.write(readme_translation)
+
+translated_path
+
+# Since subfolders under /mnt/data can't be written to directly, write to top level and move manually later.
+
+readme_translation = """
+# Testes Unitários do CodeIgniter #
+
+### Introdução:
+
+Este é o início da documentação de testes para o CodeIgniter. Ela cobre tanto APIs internas quanto externas e a lógica por trás de suas implementações. Como toda a documentação do CodeIgniter, este arquivo mantém um formato legível e claro para facilitar o design das APIs.
+
+*Primeiro rascunho público: tudo pode mudar!*
+
+### Requisitos
+
+PHPUnit >= 3.5.6
+
+pear channel-discover pear.phpunit.de
+pear channel-discover pear.symfony.com
+pear install phpunit/PHPUnit
+sudo apt-get install php-pear
+pear channel-discover pear.phpunit.de
+pear channel-discover pear.symfony-project.com
+pear channel-discover components.ez.no
+pear channel-discover pear.bovigo.org
+pear install --alldeps phpunit/PHPUnit
+pear install --alldeps bovigo/vfsStream-beta
+
+
+
+Execute `phpunit` dentro da pasta `./tests` para iniciar os testes.
+
+## Suites de Teste:
+
+1. Teste de Bootstrap — valida arquivos como common.php
+2. Teste de Sistema — testa os componentes principais isoladamente
+3. Teste de Aplicação — para testar controllers, models, views, etc.
+4. Teste de Pacotes — para bibliotecas ou módulos externos
+
+### Ambiente de Teste:
+
+O arquivo `tests/Bootstrap.php` define as constantes globais como BASEPATH, APPPATH e VIEWPATH, inicializando-as em um sistema de arquivos virtual via vfsStream.
+
+Funções úteis durante os testes:
+
+- `$this->ci_set_config($chave, $valor)` — Configura valores globais do CI
+- `$this->ci_instance($obj)` — Define ou obtém o objeto super global
+- `$this->ci_instance_var($nome, $valor)` — Define atributos no super objeto
+- `$this->ci_core_class($nome)` — Pega classe principal do núcleo (ex: CI_Config)
+- `$this->ci_set_core_class($nome, $obj)` — Define classe principal com mock
+- `$this->ci_vfs_mkdir($nome, $raiz)` — Cria diretório no VFS
+- `$this->ci_vfs_create($arquivo, $conteúdo, $raiz, $caminho)` — Cria arquivos virtuais
+- `$this->ci_vfs_clone($path)` — Clona arquivos reais para o VFS
+- `$this->ci_vfs_path($path, $base)` — Caminho válido no VFS para uso interno
+- `$this->helper($nome)` — Carrega helpers reais
+- `$this->lang($nome)` — Carrega arquivos de idioma reais
+
+### Próximos Passos
+
+- Criar testes unitários para models, helpers e bibliotecas personalizadas
+- Usar mocks para simular configurações e objetos
+- Considerar testes funcionais com ferramentas como Selenium, Cucumber ou Laravel Dusk
+"""
+
+file_path = "/mnt/data/README-PT.md"
+with open(file_path, "w") as f:
+    f.write(readme_translation)
+
+file_path
+
+
+
+
+
 # CodeIgniter Unit Tests #
 
 Status : [![Build Status](https://secure.travis-ci.org/bcit-ci/CodeIgniter.png?branch=develop)](https://travis-ci.org/bcit-ci/CodeIgniter)
