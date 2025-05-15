@@ -67,6 +67,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $active_group variable lets you choose which connection group to
 | make active.  By default there is only one group (the 'default' group).
 */
+require_once(APPPATH . 'config/env.php');
+
 $db['default'] = [
     'dsn'      => '',
     'hostname' => 'containers-us-west-45.railway.app', //  Host público
