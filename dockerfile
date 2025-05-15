@@ -1,10 +1,8 @@
 FROM php:8.2-apache
 
-# Instala extensões e dependências
+# Instala dependências
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libzip-dev \
+    git unzip libzip-dev \
     && docker-php-ext-install pdo_mysql zip
 
 # Instala Composer

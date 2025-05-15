@@ -1,5 +1,7 @@
 {
 	"build": {
-	  "builder": "docker"
+	  "builder": "dockerfile",
+	  "dockerfilePath": "Dockerfile",
+	  "enabled": true
 	}
   }
