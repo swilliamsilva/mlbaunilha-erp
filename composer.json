@@ -1,20 +1,20 @@
 {
-	"description": "The CodeIgniter framework",
-	"name": "codeigniter/framework",
+	"description": "Sistema ERP da Empresa ML Baunilha",
+	"name": "mlbaunilha/erp", 
 	"type": "project",
-	"homepage": "https://codeigniter.com",
+	"homepage": "https://mlbaunilha-erp-production.up.railway.app",
 	"license": "MIT",
 	"support": {
-		"forum": "https://forum.codeigniter.com/",
-		"wiki": "https://github.com/bcit-ci/CodeIgniter/wiki",
-		"slack": "https://codeigniterchat.slack.com",
-		"source": "https://github.com/bcit-ci/CodeIgniter"
+		"email": "suporte@mlbaunilha.com.br"
 	},
 	"require": {
-		"php": ">=5.4.8"
+		"php": ">=7.4",  
+		"codeigniter/framework": "^3.1"  
 	},
 	"suggest": {
-		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
+		"paragonie/random_compat": "Provides better randomness in PHP 5.x",
+		"ext-curl": "Para integrações com APIs externas",
+		"ext-pdo": "Para conexão com bancos de dados"
 	},
 	"scripts": {
 		"test:coverage": [
@@ -22,14 +22,19 @@
 			"phpunit --color=always --coverage-text --configuration tests/travis/sqlite.phpunit.xml"
 		],
 		"post-install-cmd": [
-			"sed -i s/name{0}/name[0]/ vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php"
+			"sed -i 's/name{0}/name[0]/g' vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php"
 		],
 		"post-update-cmd": [
-			"sed -i s/name{0}/name[0]/ vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php"
+			"sed -i 's/name{0}/name[0]/g' vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php"
 		]
 	},
 	"require-dev": {
 		"mikey179/vfsstream": "1.6.*",
-		"phpunit/phpunit": "4.* || 5.* || 9.*"
+		"phpunit/phpunit": "^9.6"
+	},
+	"autoload": {
+		"psr-4": {
+			"MlbaunilhaErp\\": "application/"  
+		}
 	}
 }

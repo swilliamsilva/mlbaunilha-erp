@@ -71,11 +71,11 @@ require_once(APPPATH . 'config/env.php');
 
 $db['default'] = [
     'dsn'      => '',
-    'hostname' => 'containers-us-west-45.railway.app', //  Host público
+    'hostname' => getenv('MYSQLHOST'), // Exemplo: containers-us-west-45.railway.app
     'username' => getenv('MYSQLUSER'),
     'password' => getenv('MYSQLPASSWORD'),
     'database' => getenv('MYSQLDATABASE'),
-    'port'     => 3306,
+    'port'     => getenv('MYSQLPORT') ?: 3306,
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,

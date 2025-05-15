@@ -1,5 +1,5 @@
 <?php
-putenv("SSL_CERT_FILE=C:/xampp/php/extras/ssl/cacert.pem");
+defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * CodeIgniter
  *
@@ -53,10 +53,10 @@ putenv("SSL_CERT_FILE=C:/xampp/php/extras/ssl/cacert.pem");
  *     production
  *
  * NOTE: If you change these, also change the error_reporting() code below
- */
-	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+ */define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 
 /*
+	
  *---------------------------------------------------------------
  * ERROR REPORTING
  *---------------------------------------------------------------

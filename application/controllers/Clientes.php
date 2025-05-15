@@ -1,4 +1,11 @@
-// application/controllers/Clientes.php
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/**
+ * @property Cliente_model $Cliente_model
+ * @property CI_Form_validation $form_validation
+ * @property CI_Input $input
+ */
 class Clientes extends CI_Controller {
     public function __construct() {
         parent::__construct();
@@ -8,6 +15,7 @@ class Clientes extends CI_Controller {
     }
 
     public function index() {
+        echo "Bem-vindo ao ERP ML Baunilha!";
         $data['clientes'] = $this->Cliente_model->get_all();
         $this->load->view('templates/header');
         $this->load->view('clientes/index', $data);
