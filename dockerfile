@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Instala dependências e extensões
+# Instala extensões e dependências
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -14,10 +14,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Copia o aplicativo
+# Copia o código
 COPY . .
 
-# Configura Apache para porta do Railway
+# Configurações do Apache
 ENV PORT=10000
 RUN sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
 CMD ["apache2-foreground"]
