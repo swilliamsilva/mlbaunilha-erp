@@ -1,6 +1,6 @@
 {
 	"description": "Sistema ERP da Empresa ML Baunilha",
-	"name": "mlbaunilha/erp", 
+	"name": "mlbaunilha/erp",
 	"type": "project",
 	"homepage": "https://mlbaunilha-erp-production.up.railway.app",
 	"license": "MIT",
@@ -8,8 +8,8 @@
 		"email": "suporte@mlbaunilha.com.br"
 	},
 	"require": {
-		"php": ">=7.4",  
-		"codeigniter/framework": "^3.1"  
+		"php": ">=7.2",
+		"codeigniter/framework": "^3.1"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x",
@@ -17,24 +17,23 @@
 		"ext-pdo": "Para conexão com bancos de dados"
 	},
 	"scripts": {
-		"test:coverage": [
-			"@putenv XDEBUG_MODE=coverage",
-			"phpunit --color=always --coverage-text --configuration tests/travis/sqlite.phpunit.xml"
-		],
 		"post-install-cmd": [
-			"sed -i 's/name{0}/name[0]/g' vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php"
+			"@fix-vfsstream"
 		],
 		"post-update-cmd": [
-			"sed -i 's/name{0}/name[0]/g' vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php"
+			"@fix-vfsstream"
+		],
+		"fix-vfsstream": [
+			"php -r \"file_put_contents('vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php', str_replace('name{0}', 'name[0]', file_get_contents('vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php')));\""
 		]
 	},
 	"require-dev": {
-		"mikey179/vfsstream": "1.6.*",
-		"phpunit/phpunit": "^9.6"
+		"mikey179/vfsstream": "1.6.8",
+		"phpunit/phpunit": "^8.5.34"
 	},
 	"autoload": {
 		"psr-4": {
-			"MlbaunilhaErp\\": "application/"  
+			"MlbaunilhaErp\\": "application/"
 		}
 	}
 }
