@@ -23,8 +23,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/mlbaunilha-erp/';
 
+$config['base_url'] = getenv('RAILWAY_PUBLIC_DOMAIN') ?: 'https://mlbaunilha-erp-production.up.railway.app';
+$config['index_page'] = '';
 
 /*
 |--------------------------------------------------------------------------
