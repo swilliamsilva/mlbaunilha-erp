@@ -1,7 +1,54 @@
+# Ativa o mod_rewrite para redirecionamentos
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+    
+    # Redireciona tudo para o index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
 </IfModule>
+
+# Bloqueia acesso a arquivos/diretórios sensíveis
+<FilesMatch "\.(env|log|sql|ini|bak|conf|key)$">
+    <IfModule authz_core_module>
+        Require all denied
+    </IfModule>
+    <IfModule !authz_core_module>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Bloqueia acesso ao diretório /system
+<Directory "/system">
+    <IfModule authz_core_module>
+        Require all denied
+    </IfModule>
+    <IfModule !authz_core_module>
+        Deny from all
+    </IfModule>
+</Directory>
+
+# PERMITE ACESSO AO DIRETÓRIO DE LOGS (CodeIgniter)
+<Directory "/application/logs">
+    <IfModule authz_core_module>
+        Require all granted
+    </IfModule>
+    <IfModule !authz_core_module>
+        Allow from all
+    </IfModule>
+</Directory>
+# Impede listagem de diretórios
+Options -Indexes
+
+# Força exibição de erros do PHP (REMOVA ISSO EM PRODUÇÃO)
+php_flag display_errors on
+php_flag display_startup_errors on
+php_value error_reporting E_ALL
+php_value log_errors on
+php_value error_log /var/www/html/application/logs/php_errors.log
+
+# Redirecionamentos de erro personalizados
+ErrorDocument 502 "Erro 502: Bad Gateway. Consulte os logs em /var/www/html/application/logs/"
+ErrorDocument 403 "Acesso negado. Verifique permissões ou configurações de segurança."
+ErrorDocument 404 "Página não encontrada. Rota inválida ou arquivo ausente."
