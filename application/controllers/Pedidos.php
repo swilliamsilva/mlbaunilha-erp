@@ -1,3 +1,4 @@
+<?php
 // application/controllers/Pedidos.php
 class Pedidos extends CI_Controller {
     public function __construct() {

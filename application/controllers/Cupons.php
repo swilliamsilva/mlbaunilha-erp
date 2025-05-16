@@ -1,3 +1,4 @@
+<?php
 // application/controllers/Cupons.php
 class Cupons extends CI_Controller {
     public function __construct() {

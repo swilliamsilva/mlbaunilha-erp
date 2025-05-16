@@ -1,3 +1,4 @@
+<?php
 // application/controllers/Estoque.php
 class Estoque extends CI_Controller {
     public function __construct() {

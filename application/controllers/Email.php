@@ -1,3 +1,4 @@
+<?php
 // application/controllers/Email.php
 class Email extends CI_Controller {
     public function __construct() {

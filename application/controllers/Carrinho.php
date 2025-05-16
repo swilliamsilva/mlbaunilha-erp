@@ -1,3 +1,5 @@
+<?php
+
 // application/controllers/Carrinho.php
 class Carrinho extends CI_Controller {
     public function __construct() {

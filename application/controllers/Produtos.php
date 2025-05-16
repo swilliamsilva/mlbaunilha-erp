@@ -1,3 +1,4 @@
+<?php
 // application/controllers/Produtos.php
 class Produtos extends CI_Controller {
     public function __construct() {

@@ -1,3 +1,4 @@
+<?php
 // application/controllers/Logs.php
 class Logs extends CI_Controller {
     public function index() {

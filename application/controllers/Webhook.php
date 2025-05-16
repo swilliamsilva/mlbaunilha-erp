@@ -1,3 +1,4 @@
+<?php
 // application/controllers/Webhook.php
 class Webhook extends CI_Controller {
     public function __construct() {
