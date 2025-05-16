@@ -33,5 +33,6 @@
 Options -Indexes
 
 # Redirecionamentos de erro
+ErrorDocument 502 "Problemas 502"
 ErrorDocument 403 "Acesso negado"
 ErrorDocument 404 "Página não encontrada"
