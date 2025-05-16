@@ -37,6 +37,8 @@ $config['index_page'] = '';
 | variable so that it is blank.
 |
 */
+$config['log_threshold'] = 4;  // Ativa todos os níveis de log (0 = desligado)
+$config['log_path'] = '';      // Deixe vazio para usar `application/logs`
 $config['index_page'] = 'index.php';
 
 /*

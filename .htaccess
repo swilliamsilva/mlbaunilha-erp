@@ -9,14 +9,13 @@
     RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
 </IfModule>
 
-# Bloqueia acesso a arquivos/diretórios sensíveis
-<FilesMatch "\.(env|log|sql|ini|bak|conf|key)$">
+# Bloqueia acesso a arquivos sensíveis, mas permite logs
+<FilesMatch "\.(env|sql|ini|bak|conf|key)$">
     <IfModule authz_core_module>
         Require all denied
     </IfModule>
     <IfModule !authz_core_module>
-#        Deny from all
-       Allow from all
+        Deny from all
     </IfModule>
 </FilesMatch>
 
@@ -26,24 +25,29 @@
         Require all denied
     </IfModule>
     <IfModule !authz_core_module>
- #       Deny from all
-        Allow from all
+        Deny from all
     </IfModule>
 </Directory>
 
-# PERMITE ACESSO AO DIRETÓRIO DE LOGS (CodeIgniter)
-<Directory "/application/logs">
+# PERMITE ACESSO AO DIRETÓRIO DE LOGS (ajuste o caminho completo!)
+<Directory "/var/www/html/application/logs">
     <IfModule authz_core_module>
         Require all granted
     </IfModule>
     <IfModule !authz_core_module>
         Allow from all
     </IfModule>
+    
+    # Permite acesso a arquivos .log (opcional)
+    <FilesMatch "\.(log)$">
+        Allow from all
+    </FilesMatch>
 </Directory>
+
 # Impede listagem de diretórios
 Options -Indexes
 
-# Força exibição de erros do PHP (REMOVA ISSO EM PRODUÇÃO)
+# Força exibição de erros do PHP (REMOVA EM PRODUÇÃO)
 php_flag display_errors on
 php_flag display_startup_errors on
 php_value error_reporting E_ALL

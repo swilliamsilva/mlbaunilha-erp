@@ -19,6 +19,9 @@ user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
 
+ application/logs/*
+!application/logs/.gitkeep  # Mantém a pasta no repositório (opcional)
+
 # IDEs
 /nbproject/
 .idea/*
