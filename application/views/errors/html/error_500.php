@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="error-container">
-        <h1>404</h1>
+        <h1>500</h1>
         <p>A página que você procura não existe.</p>
         <a href="<?= site_url() ?>" class="btn">Voltar para a página inicial</a>
     </div>

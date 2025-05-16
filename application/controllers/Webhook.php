@@ -1,29 +1,59 @@
 <?php
-// application/controllers/Webhook.php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/**
+ * @property Pedido_model $pedido
+ */
 class Webhook extends CI_Controller {
+
     public function __construct() {
         parent::__construct();
-        $this->load->model('Pedido_model');
+        $this->load->model('Pedido_model', 'pedido', TRUE); // Carrega com alias
     }
 
     public function atualizar() {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $pedido_id = $input['pedido_id'] ?? null;
-        $status = $input['status'] ?? null;
-
-        if ($pedido_id && $status) {
-            if ($status === 'cancelado') {
-                $this->Pedido_model->delete($pedido_id);
-                http_response_code(200);
-                echo json_encode(['message' => 'Pedido cancelado e removido']);
-            } else {
-                $this->Pedido_model->update_status($pedido_id, $status);
-                http_response_code(200);
-                echo json_encode(['message' => 'Status atualizado']);
+        try {
+            header('Content-Type: application/json');
+            
+            // Verifica método HTTP
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Método não permitido', 405);
             }
-        } else {
-            http_response_code(400);
-            echo json_encode(['error' => 'Dados inválidos']);
+
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            // Validação básica
+            if (empty($input['pedido_id']) || empty($input['status'])) {
+                throw new Exception('Dados inválidos', 400);
+            }
+
+            $this->processar_webhook($input['pedido_id'], $input['status']);
+            
+            echo json_encode(['success' => true]);
+            
+        } catch (Exception $e) {
+            http_response_code($e->getCode() ?: 500);
+            echo json_encode([
+                'error' => $e->getMessage(),
+                'code' => $e->getCode()
+            ]);
+        }
+    }
+
+    private function processar_webhook($pedido_id, $status) {
+        $pedido = $this->pedido->get_by_id($pedido_id);
+        
+        if (!$pedido) {
+            throw new Exception('Pedido não encontrado', 404);
+        }
+
+        switch (strtolower($status)) {
+            case 'cancelado':
+                $this->pedido->cancelar($pedido_id);
+                break;
+                
+            default:
+                $this->pedido->atualizar_status($pedido_id, $status);
         }
     }
 }

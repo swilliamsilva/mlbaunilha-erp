@@ -1,12 +1,12 @@
 <?php
-// Estrutura inicial do projeto CI3 + Bootstrap - controlador Cliente corrigido
+defined('BASEPATH') OR exit('No direct script access allowed');
 
-// application/controllers/Clientes.php
 class Clientes extends CI_Controller {
+
     public function __construct() {
         parent::__construct();
         $this->load->model('Cliente_model');
-        $this->load->helper(array('form', 'url'));
+        $this->load->helper(['form', 'url']);
         $this->load->library('form_validation');
     }
 
@@ -24,25 +24,27 @@ class Clientes extends CI_Controller {
     }
 
     public function store() {
+        // Configurações de validação
         $this->form_validation->set_rules('cpf', 'CPF', 'required|exact_length[14]');
-        $this->form_validation->set_rules('nome', 'Nome', 'required');
+        $this->form_validation->set_rules('nome', 'Nome', 'required|max_length[100]');
         $this->form_validation->set_rules('cep', 'CEP', 'required|exact_length[9]');
+        $this->form_validation->set_rules('telefone', 'Telefone', 'max_length[20]');
+        $this->form_validation->set_rules('email', 'E-mail', 'valid_email|max_length[100]');
 
         if ($this->form_validation->run() == FALSE) {
             $this->create();
-            return;
+        } else {
+            $data = [
+                'cpf' => $this->input->post('cpf', TRUE),
+                'nome' => $this->input->post('nome', TRUE),
+                'cep' => $this->input->post('cep', TRUE),
+                'telefone' => $this->input->post('telefone', TRUE),
+                'email' => $this->input->post('email', TRUE),
+                'observacao' => $this->input->post('observacao', TRUE)
+            ];
+
+            $this->Cliente_model->insert($data);
+            redirect('clientes');
         }
-
-        $data = array(
-            'cpf' => $this->input->post('cpf'),
-            'nome' => $this->input->post('nome'),
-            'cep' => $this->input->post('cep'),
-            'telefone' => $this->input->post('telefone'),
-            'email' => $this->input->post('email'),
-            'observacao' => $this->input->post('observacao')
-        );
-
-        $this->Cliente_model->insert($data);
-        redirect('clientes');
     }
 }

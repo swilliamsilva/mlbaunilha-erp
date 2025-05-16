@@ -1,16 +1,22 @@
-# Ativa o mod_rewrite para redirecionamentos
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
     
-    # Redireciona tudo para o index.php
+    # Bloqueia acesso a arquivos ocultos e sensíveis
+    RewriteRule (^\.|/\.) - [F]
+    RewriteRule ^(composer\.lock|package\.json|\.env|\.gitignore|\.htaccess) - [F,L]
+
+    # Redirecionamento HTTPS (habilitar em produção)
+    # RewriteCond %{HTTPS} !=on
+    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Redireciona para front controller
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
 </IfModule>
 
-# Bloqueia acesso a arquivos sensíveis, mas permite logs
-<FilesMatch "\.(env|sql|ini|bak|conf|key)$">
+<FilesMatch "\.(env|sql|ini|bak|conf|key|log|lock|md|yml|phar|twig)$">
     <IfModule authz_core_module>
         Require all denied
     </IfModule>
@@ -19,42 +25,53 @@
     </IfModule>
 </FilesMatch>
 
-# Bloqueia acesso ao diretório /system
-<Directory "/system">
+<DirectoryMatch "(^|/)(system|vendor|node_modules|tests|config|logs)">
     <IfModule authz_core_module>
         Require all denied
     </IfModule>
     <IfModule !authz_core_module>
         Deny from all
     </IfModule>
-</Directory>
+</DirectoryMatch>
 
-# PERMITE ACESSO AO DIRETÓRIO DE LOGS (ajuste o caminho completo!)
-<Directory "/var/www/html/application/logs">
-    <IfModule authz_core_module>
-        Require all granted
-    </IfModule>
-    <IfModule !authz_core_module>
-        Allow from all
-    </IfModule>
-    
-    # Permite acesso a arquivos .log (opcional)
-    <FilesMatch "\.(log)$">
-        Allow from all
-    </FilesMatch>
-</Directory>
+# Configurações de segurança
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Configuração de cache (ajustar valores conforme necessidade)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
 
 # Impede listagem de diretórios
 Options -Indexes
+Options -MultiViews
+Options +FollowSymLinks
 
-# Força exibição de erros do PHP (REMOVA EM PRODUÇÃO)
-php_flag display_errors on
-php_flag display_startup_errors on
-php_value error_reporting E_ALL
-php_value log_errors on
-php_value error_log /var/www/html/application/logs/php_errors.log
+# Configurações PHP (desenvolvimento vs produção)
+<IfModule mod_php7.c>
+    # Para produção:
+    # php_flag display_errors off
+    # php_flag log_errors on
+    # php_value error_log "/caminho/absoluto/application/logs/php_errors.log"
+    
+    # Para desenvolvimento:
+    php_flag display_errors on
+    php_flag display_startup_errors on
+    php_value error_reporting E_ALL
+</IfModule>
 
-# Redirecionamentos de erro personalizados
-ErrorDocument 502 "Erro 502: Bad Gateway. Consulte os logs em /var/www/html/application/logs/"
-ErrorDocument 403 "Acesso negado. Verifique permissões ou configurações de segurança."
-ErrorDocument 404 "Página não encontrada. Rota inválida ou arquivo ausente."
+# Tratamento de erros personalizado
+ErrorDocument 400 /errors/bad_request
+ErrorDocument 401 /errors/unauthorized
+ErrorDocument 403 /errors/forbidden
+ErrorDocument 404 /errors/not_found
+ErrorDocument 500 /errors/server_error
