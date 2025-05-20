@@ -5,6 +5,13 @@ composer require bovigo/vfsStream
 MERCADINHO LIBRE DA BAUNILHA
 
 ### Executar teste
+
+docker build -t mlbaunilha-erp . 
+docker run -d -p 8080:8080 --name mlbaunilha-erp mlbaunilha-erp
+docker logs mlbaunilha-erp
+
+# Executar no docker 
+
 # Executar todos os testes com cobertura
 phpunit --coverage-html build/coverage
 
