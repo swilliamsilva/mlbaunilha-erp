@@ -44,7 +44,7 @@ RUN mkdir -p application/logs \
 
 # 6. Configuração PHP para ambientes dinâmicos (usando variáveis)
 ENV PHP_DISPLAY_ERRORS=Off \
-    PHP_ERROR_REPORTING='E_ALL & ~E_DEPRECATED & ~E_STRICT'
+    PHP_ERROR_REPORTING=24575 
 
 RUN echo "display_errors = ${PHP_DISPLAY_ERRORS}" >> /usr/local/etc/php/conf.d/00-custom.ini \
     && echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/conf.d/00-custom.ini \
@@ -56,4 +56,6 @@ RUN a2enmod rewrite \
     && sed -i 's/80/8080/g' /etc/apache2/ports.conf \
     && sed -i 's/80/8080/g' /etc/apache2/sites-available/*.conf
 
-CMD ["apache2-foreground"]
+HEALTHCHECK --interval=30s --timeout=3s \
+CMD curl -f http://localhost:8080/health || exit 1
+
