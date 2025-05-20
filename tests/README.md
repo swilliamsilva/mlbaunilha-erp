@@ -126,6 +126,22 @@ Funções úteis durante os testes:
 - `$this->helper($nome)` — Carrega helpers reais
 - `$this->lang($nome)` — Carrega arquivos de idioma reais
 
+### Executar teste
+# Executar todos os testes com cobertura
+phpunit --coverage-html build/coverage
+
+# Executar apenas testes do CodeIgniter Core
+phpunit --testsuite "CodeIgniter Core"
+
+# Gerar relatório para SonarQube
+phpunit --coverage-clover build/logs/clover.xml
+
+
+
+
+
+
+
 ### Próximos Passos
 
 - Criar testes unitários para models, helpers e bibliotecas personalizadas

@@ -1,25 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+    bootstrap="tests/Bootstrap.php"
+    colors="true"
+    cacheResult="true"
+    convertDeprecationsToExceptions="true"
+    beStrictAboutOutputDuringTests="true"
+    failOnRisky="true"
+    failOnWarning="true"
+    verbose="true">
 
-<phpunit
-	bootstrap="./Bootstrap.php"
-	colors="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	stopOnError="false"
-	stopOnFailure="false"
-	stopOnIncomplete="false"
-	stopOnSkipped="false"
-	beStrictAboutTestsThatDoNotTestAnything="false">
-	<testsuites>
-		<testsuite name="CodeIgniter Core Test Suite">
-			<directory suffix="test.php">./codeigniter/core</directory>
-			<directory suffix="test.php">./codeigniter/helpers</directory>
-			<directory suffix="test.php">./codeigniter/libraries</directory>
-		</testsuite>
-	</testsuites>
-	<filter>
-		<whitelist>
-			<directory suffix=".php">../system/</directory>
-		</whitelist>
-	</filter>
+    <testsuites>
+        <testsuite name="Application Test Suite">
+            <!-- Testes principais -->
+            <directory>tests</directory>
+            
+            <!-- Testes específicos do CodeIgniter -->
+            <testsuite name="CodeIgniter Core">
+                <directory suffix="Test.php">tests/codeigniter/core</directory>
+                <directory suffix="Test.php">tests/codeigniter/helpers</directory>
+                <directory suffix="Test.php">tests/codeigniter/libraries</directory>
+            </testsuite>
+
+            <!-- Testes de integração -->
+            <testsuite name="Integration Tests">
+                <directory suffix="Test.php">tests/integration</directory>
+            </testsuite>
+        </testsuite>
+    </testsuites>
+
+    <coverage>
+        <include>
+            <!-- Diretórios para análise de cobertura -->
+            <directory suffix=".php">application</directory>
+            <directory suffix=".php">system/core</directory>
+            <directory suffix=".php">system/libraries</directory>
+        </include>
+        
+        <exclude>
+            <!-- Exclusões -->
+            <directory>system/third_party</directory>
+            <directory>application/cache</directory>
+            <directory>application/logs</directory>
+        </exclude>
+
+        <!-- Relatório em formato clover para CI -->
+        <report>
+            <clover outputFile="build/logs/clover.xml"/>
+            <html outputDirectory="build/coverage"/>
+        </report>
+    </coverage>
+
+    <php>
+        <!-- Variáveis de ambiente para testes -->
+        <env name="APP_ENV" value="testing"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+    </php>
 </phpunit>

@@ -1,6 +1,18 @@
+# instale
+composer require bovigo/vfsStream
+
 # mlbaunilha-erp
 MERCADINHO LIBRE DA BAUNILHA
 
+### Executar teste
+# Executar todos os testes com cobertura
+phpunit --coverage-html build/coverage
+
+# Executar apenas testes do CodeIgniter Core
+phpunit --testsuite "CodeIgniter Core"
+
+# Gerar relatório para SonarQube
+phpunit --coverage-clover build/logs/clover.xml
 # Criação de tabelas e banco de dados
 Na raiz do projeto você encontra instruções em 
 /system/ setup.php 
