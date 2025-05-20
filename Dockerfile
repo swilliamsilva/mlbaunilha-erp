@@ -32,6 +32,8 @@ COPY --from=builder /etc/apache2/mods-available/headers.load /etc/apache2/mods-a
 WORKDIR /var/www/html
 COPY . .
 
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # 5. Gerenciamento de logs e permissões
 RUN mkdir -p application/logs \
     && chown -R www-data:www-data /var/www/html \
