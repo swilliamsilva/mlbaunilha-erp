@@ -2,6 +2,18 @@
 	"build": {
 	  "builder": "dockerfile",
 	  "dockerfilePath": "Dockerfile",
-	  "enabled": true
+	  "nixpacksPlan": {
+		"phases": {
+		  "setup": {
+			"aptPackages": ["libzip-dev"]
+		  },
+		  "install": {
+			"commands": [
+			  "docker-php-ext-configure zip",
+			  "docker-php-ext-install zip"
+			]
+		  }
+		}
+	  }
 	}
   }
