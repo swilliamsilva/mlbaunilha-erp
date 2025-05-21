@@ -12,6 +12,13 @@ docker logs mlbaunilha-erp
 docker ps                          Para ver a porta 
 docker exec -it mlbaunilha-erp bash
 
+## Com o compose
+docker-compose build
+docker-compose up -
+docker ps
+docker-compose logs -f
+http://localhost:10000
+
 # Executar no docker 
 
 # Executar todos os testes com cobertura
