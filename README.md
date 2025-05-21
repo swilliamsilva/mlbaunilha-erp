@@ -19,7 +19,12 @@ docker ps
 docker-compose logs -f
 http://localhost:10000
 
-# Executar no docker 
+# Executar com railway cli
+railway run ls -la /var/www/html/application/logs
+railway run curl -v http://localhost:10000
+railway logs --follow | grep -E 'PHP|AH'
+railway logs --service app --lines 100 | grep 'apache2'
+
 
 # Executar todos os testes com cobertura
 phpunit --coverage-html build/coverage
