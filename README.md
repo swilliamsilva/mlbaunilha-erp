@@ -20,8 +20,16 @@ docker-compose logs -f
 http://localhost:10000
 
 # Executar com railway cli
-railway run ls -la /var/www/html/application/logs
+instalando no linux
+brew install railway
+railway login
+cd pasta/do/seu/projeto
+railway link
+
+
+
 railway run curl -v http://localhost:10000
+railway run ls -la /var/www/html/application/logs
 railway logs --follow | grep -E 'PHP|AH'
 railway logs --service app --lines 100 | grep 'apache2'
 
