@@ -1,0 +1,9 @@
+[project]
+name = "mlbaunilha-erp"
+version= "0.1.0"
+description = "Sistema ML BAUNILHA "
+dependencies = [
+	"flask==2.2.5",
+	"requests>=2.28.0"
+	"docker-compose>=1.29.2",
+]

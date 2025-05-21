@@ -7,8 +7,10 @@ MERCADINHO LIBRE DA BAUNILHA
 ### Executar teste
 
 docker build -t mlbaunilha-erp . 
-docker run -d -p 8080:8080 --name mlbaunilha-erp mlbaunilha-erp
+docker run -d -p 8080:80 --name mlbaunilha-erp mlbaunilha-erp
 docker logs mlbaunilha-erp
+docker ps                          Para ver a porta 
+docker exec -it mlbaunilha-erp bash
 
 # Executar no docker 
 
