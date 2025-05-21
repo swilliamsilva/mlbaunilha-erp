@@ -41,15 +41,11 @@ COPY --from=builder /var/www/html/ /var/www/html/
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
-# Instala net-tools para diagnóstico (remova após testes)
-RUN apt-get update && apt-get install -y net-tools && rm -rf /var/lib/apt/lists/*
-
-# Configuração crítica do Apache
+# Configuração crítica do Apache (modificações robustas)
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
-    && sed -i "s/Listen 80/Listen 0.0.0.0:${PORT}/g" /etc/apache2/ports.conf \
-    && sed -i "s/<VirtualHost \*:80>/<VirtualHost 0.0.0.0:${PORT}>/g" /etc/apache2/sites-available/000-default.conf \
-    && echo "IncludeOptional /etc/apache2/railway.conf" >> /etc/apache2/apache2.conf
+    && sed -i "s/^Listen 80$/Listen 0.0.0.0:${PORT}/g" /etc/apache2/ports.conf \
+    && sed -i "s/<VirtualHost \*:80>/<VirtualHost 0.0.0.0:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
 
 # Configuração de logs detalhados
 RUN { \
@@ -59,9 +55,9 @@ RUN { \
     echo 'display_errors = stderr'; \
     } > /usr/local/etc/php/conf.d/00-railway.ini
 
-# Healthcheck otimizado para Railway
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/health || exit 1
+# Healthcheck otimizado
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:${PORT} || exit 1
 
 EXPOSE ${PORT}
 CMD ["apache2-foreground"]

@@ -25,7 +25,7 @@ brew install railway
 railway login
 cd pasta/do/seu/projeto
 railway link
-
+cat /etc/apache2/ports.conf | grep 'Listen'
 
 
 railway run curl -v http://localhost:10000
