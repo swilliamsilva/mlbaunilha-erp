@@ -41,6 +41,9 @@ COPY --from=builder /var/www/html/ /var/www/html/
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
+# Instala net-tools para diagnóstico (remova após testes)
+RUN apt-get update && apt-get install -y net-tools && rm -rf /var/lib/apt/lists/*
+
 # Configuração crítica do Apache
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
