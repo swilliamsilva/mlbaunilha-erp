@@ -35,6 +35,8 @@ COPY . .
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
+
+
 # 5. Gerenciamento de logs e permissões
 RUN mkdir -p application/logs \
     && chown -R www-data:www-data /var/www/html \
@@ -68,6 +70,12 @@ RUN apt-get update && apt-get install -y \
     git unzip libzip-dev \
     && docker-php-ext-install pdo_mysql zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install gd
+
 
 # Ativa o mod_rewrite (essencial para frameworks PHP)
 RUN a2enmod rewrite
