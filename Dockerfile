@@ -24,30 +24,41 @@ FROM php:8.2-apache
 
 ARG PORT=10000
 ENV PORT=${PORT} \
-    APACHE_DOCUMENT_ROOT=/var/www/html
+    APACHE_DOCUMENT_ROOT=/var/www/html \
+    APACHE_RUN_USER=www-data \
+    APACHE_RUN_GROUP=www-data \
+    APACHE_LOG_DIR=/var/log/apache2
 
-# Cria diretórios críticos primeiro
-RUN mkdir -p /var/www/html/application/logs \
-    && mkdir -p /var/www/html/application/cache
+# Cria diretórios críticos com permissões
+RUN mkdir -p \
+    /var/www/html/application/logs \
+    /var/www/html/application/cache \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/application/logs /var/www/html/application/cache
 
 # Copia conteúdo do builder
 COPY --from=builder /var/www/html/ /var/www/html/
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
-# Configura Apache e permissões
-RUN a2enmod rewrite headers \
-    && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
+# Configuração crítica do Apache
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
-    && sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf \
-    && sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/g" /etc/apache2/sites-available/000-default.conf \
-    && chown -R www-data:www-data /var/www/html \
-    && find /var/www/html -type d -exec chmod 755 {} \; \
-    && find /var/www/html -type f -exec chmod 644 {} \; \
-    && chmod -R 775 /var/www/html/application/logs /var/www/html/application/cache
+    && sed -i "s/Listen 80/Listen 0.0.0.0:${PORT}/g" /etc/apache2/ports.conf \
+    && sed -i "s/<VirtualHost \*:80>/<VirtualHost 0.0.0.0:${PORT}>/g" /etc/apache2/sites-available/000-default.conf \
+    && echo "IncludeOptional /etc/apache2/railway.conf" >> /etc/apache2/apache2.conf
 
-# Configurações PHP
-RUN echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/conf.d/00-custom.ini
+# Configuração de logs detalhados
+RUN { \
+    echo 'error_log = /proc/self/fd/2'; \
+    echo 'log_errors = On'; \
+    echo 'error_reporting = E_ALL'; \
+    echo 'display_errors = stderr'; \
+    } > /usr/local/etc/php/conf.d/00-railway.ini
+
+# Healthcheck otimizado para Railway
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
 
 EXPOSE ${PORT}
 CMD ["apache2-foreground"]
