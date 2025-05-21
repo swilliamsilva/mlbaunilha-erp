@@ -1,114 +1,72 @@
-# Estágio de construção (opcional para projetos complexos)
+## ----------------------------
+# Estágio de construção
+# ----------------------------
 FROM php:8.2-apache AS builder
 
-# 1. Instalação otimizada de dependências
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libzip-dev \
-    libpng-dev \
-    libonig-dev \
-    && rm -rf /var/lib/apt/lists/* \
+    git unzip libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libonig-dev \
     && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        zip \
-        mbstring \
-        gd \
-    && a2enmod rewrite headers
+        pdo_mysql zip mbstring \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd \
+    && a2enmod rewrite headers \
+    && rm -rf /var/lib/apt/lists/*
 
-# 2. Instalação do Composer (se necessário)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# -----------------------------------------------------------
-# Estágio de produção
+# ----------------------------
+# Estágio final (produção)
+# ----------------------------
 FROM php:8.2-apache
 
+# Define a porta da aplicação (antes de usá-la!)
+ARG PORT=10000
+ENV PORT=${PORT}
 
-# 3. Copia apenas dependências necessárias do estágio builder
+# Copia extensões do builder
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-available/
 COPY --from=builder /etc/apache2/mods-available/headers.load /etc/apache2/mods-available/
+COPY --from=builder /usr/bin/composer /usr/bin/composer
 
-# 4. Configuração segura do Apache
+# Configura Apache
+RUN a2enmod rewrite headers \
+    && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
+    && echo "ErrorLog /proc/self/fd/2" >> /etc/apache2/apache2.conf \
+    && echo "CustomLog /proc/self/fd/1 combined" >> /etc/apache2/apache2.conf \
+    && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
+    && sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf \
+    && sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/" /etc/apache2/sites-available/000-default.conf
+
+# Diretório da aplicação
 WORKDIR /var/www/html
+
+# Copia arquivos do projeto
 COPY . .
 
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+# Instala dependências PHP
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs || true
 
-
-
-# 5. Gerenciamento de logs e permissões
+# Permissões
 RUN mkdir -p application/logs \
     && chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html -type f -exec chmod 644 {} \; \
-    && chmod -R 775 application/logs \
-    && echo "ErrorLog /proc/self/fd/2" >> /etc/apache2/apache2.conf \
-    && echo "CustomLog /proc/self/fd/1 combined" >> /etc/apache2/apache2.conf \
-    && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+    && chmod -R 775 application/logs
 
-# 6. Configuração PHP para ambientes dinâmicos (usando variáveis)
+# Configurações PHP dinâmicas
 ENV PHP_DISPLAY_ERRORS=Off \
-    PHP_ERROR_REPORTING=24575 
+    PHP_ERROR_REPORTING=24575
 
 RUN echo "display_errors = ${PHP_DISPLAY_ERRORS}" >> /usr/local/etc/php/conf.d/00-custom.ini \
-    && echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/conf.d/00-custom.ini \
-    && echo "error_reporting = ${PHP_ERROR_REPORTING}" >> /usr/local/etc/php/conf.d/00-custom.ini
+    && echo "error_reporting = ${PHP_ERROR_REPORTING}" >> /usr/local/etc/php/conf.d/00-custom.ini \
+    && echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/conf.d/00-custom.ini
 
-# 7. Otimização para Railway
-EXPOSE 8080
-RUN a2enmod rewrite \
-    && sed -i 's/80/8080/g' /etc/apache2/ports.conf \
-    && sed -i 's/80/8080/g' /etc/apache2/sites-available/*.conf
-
+# Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
-CMD curl -f http://localhost:8080/health || exit 1
+  CMD curl -f http://localhost:${PORT}/health || exit 1
 
-
-# Instala dependências e extensões do PHP
-RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev \
-    && docker-php-ext-install pdo_mysql zip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && \
-    apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install gd
-
-
-# Ativa o mod_rewrite (essencial para frameworks PHP)
-RUN a2enmod rewrite
-
-# Define diretório de trabalho
-WORKDIR /var/www/html
-
-# Instala o Composer (última versão oficial)
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copia arquivos de dependência e instala com Composer
-COPY composer.json composer.lock ./
-
-# Apache pronto para operação
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Evita falha se algum pacote dev for necessário apenas em dev
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs || true
-
-# Copia o restante do código do projeto
-COPY . .
-
-# Ajusta permissões (recomendado usar www-data para Apache)
-RUN chown -R www-data:www-data /var/www/html
-
-# Altera a porta do Apache (caso esteja usando porta customizada)
-ENV PORT=10000
-RUN sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf && \
-    sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/" /etc/apache2/sites-available/000-default.conf
-
-# Expõe a porta configurada
+# Expõe a porta correta
 EXPOSE ${PORT}
 
-# Inicia o Apache em foreground
 CMD ["apache2-foreground"]
-
