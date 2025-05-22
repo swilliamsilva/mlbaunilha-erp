@@ -1,8 +1,5 @@
 Arquivo de memoria de calculo
 =============================
-
-
-
 To activate the new configuration, you need to run:
   service apache2 restart
 
@@ -18,7 +15,7 @@ swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway link
 > Select an environment production
 > Select a service <esc to skip> mlbaunilha-erp
 
-Project mlbaunilha-erp linked successfully! 🎉
+Project mlbaunilha-erp linked successully! 🎉
 swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway logs
 Starting Container
 ^C  
@@ -26,7 +23,7 @@ swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run sh -c "
 sh: 1: netstat: not found
 swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ 
 
-/workspace-erp/mlbaunilha-erp$ railway run -v curl http://localhost:10000
+/workspace-erp/mlbaunilha-erp$ ralway run -v curl http://localhost:10000
 error: unexpected argument '-v' found
 
   tip: to pass '-v' as a value, use '-- -v'
@@ -35,40 +32,20 @@ Usage: railway run [OPTIONS] [ARGS]...
 
 For more information, try '--help'.
 
-swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run --v curl http://localhost:10000
+swilliamsilva@debian:~/Desktop/worspace-erp/mlbaunilha-erp$ railway run --v curl http://localhost:10000
 error: unexpected argument '--v' found
 
   tip: a similar argument exists: '--version'
   tip: to pass '--v' as a value, use '-- --v'
 
 Usage: railway run --version [ARGS]...
-
 For more information, try '--help'.
-
 swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run -v curl http://localhost:10000
 error: unexpected argument '-v' found
 
   tip: to pass '-v' as a value, use '-- -v'
-
 Usage: railway run [OPTIONS] [ARGS]...
 
-For more information, try '--help'.
-
+For more information, try '-hel'.
 swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run -u curl http://localhost:10000
-error: unexpected argument '-u' found
-
-  tip: to pass '-u' as a value, use '-- -u'
-
-Usage: railway run [OPTIONS] [ARGS]...
-
-For more information, try '--help'.
-
-swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run --u curl http://localhost:10000
-error: unexpected argument '--u' found
-
-  tip: to pass '--u' as a value, use '-- --u'
-
-Usage: railway run [OPTIONS] [ARGS]...
-
-For more information, try '--help'.
-
+erro
