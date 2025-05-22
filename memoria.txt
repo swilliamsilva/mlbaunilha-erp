@@ -1,2 +1,74 @@
 Arquivo de memoria de calculo
-===================================
+=============================
+
+
+
+To activate the new configuration, you need to run:
+  service apache2 restart
+
+[builder 2/6] RUN apt-get update && apt-get install -y     git unzip libpng-dev libjpeg62-turbo-dev libfreetype6-dev     libzip-dev libonig-dev     && docker-php-ext-configure gd --with-freetype --with-jpeg     && docker-php-ext-install -j$(nproc) gd pdo_mysql zip mbstring     && a2enmod rewrite headers     && rm -rf /var/lib/apt/lists/*
+[builder 3/6] COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+Deploy failed
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway logs
+Starting Container
+^C
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway link
+> Select a workspace William Silva's Projects
+> Select a project mlbaunilha-erp
+> Select an environment production
+> Select a service <esc to skip> mlbaunilha-erp
+
+Project mlbaunilha-erp linked successfully! 🎉
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway logs
+Starting Container
+^C  
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run sh -c "netstat -tuln | grep ':10000'"
+sh: 1: netstat: not found
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ 
+
+/workspace-erp/mlbaunilha-erp$ railway run -v curl http://localhost:10000
+error: unexpected argument '-v' found
+
+  tip: to pass '-v' as a value, use '-- -v'
+
+Usage: railway run [OPTIONS] [ARGS]...
+
+For more information, try '--help'.
+
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run --v curl http://localhost:10000
+error: unexpected argument '--v' found
+
+  tip: a similar argument exists: '--version'
+  tip: to pass '--v' as a value, use '-- --v'
+
+Usage: railway run --version [ARGS]...
+
+For more information, try '--help'.
+
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run -v curl http://localhost:10000
+error: unexpected argument '-v' found
+
+  tip: to pass '-v' as a value, use '-- -v'
+
+Usage: railway run [OPTIONS] [ARGS]...
+
+For more information, try '--help'.
+
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run -u curl http://localhost:10000
+error: unexpected argument '-u' found
+
+  tip: to pass '-u' as a value, use '-- -u'
+
+Usage: railway run [OPTIONS] [ARGS]...
+
+For more information, try '--help'.
+
+swilliamsilva@debian:~/Desktop/workspace-erp/mlbaunilha-erp$ railway run --u curl http://localhost:10000
+error: unexpected argument '--u' found
+
+  tip: to pass '--u' as a value, use '-- --u'
+
+Usage: railway run [OPTIONS] [ARGS]...
+
+For more information, try '--help'.
+
