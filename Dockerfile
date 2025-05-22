@@ -3,7 +3,6 @@
 # ----------------------------
 FROM php:8.2-apache AS builder
 
-# Instala dependências do sistema e extensões PHP
 RUN apt-get update && apt-get install -y \
     git unzip libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
     libzip-dev libonig-dev \
@@ -12,10 +11,8 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
-# Instala o Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copia o código e instala dependências
 WORKDIR /var/www/html
 COPY . .
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
@@ -27,34 +24,28 @@ FROM php:8.2-apache
 
 ARG PORT=10000
 ENV PORT=${PORT} \
-    APACHE_DOCUMENT_ROOT=/var/www/html \
-    APACHE_RUN_USER=www-data \
-    APACHE_RUN_GROUP=www-data
+    APACHE_DOCUMENT_ROOT=/var/www/html
 
-# Cria diretórios críticos com verificação explícita
-RUN mkdir -p /var/www/html/application/logs \
-    && mkdir -p /var/www/html/application/cache
+# Cria diretórios críticos primeiro
+RUN mkdir -p \
+    /var/www/html/application/logs \
+    /var/www/html/application/cache
 
 # Copia conteúdo do builder
 COPY --from=builder /var/www/html/ /var/www/html/
-COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
-COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
-# Configuração robusta do Apache
-RUN sed -i "s/Listen 80/Listen 0.0.0.0:${PORT}/g" /etc/apache2/ports.conf \
-    && sed -i "s/<VirtualHost \*:80>/<VirtualHost 0.0.0.0:${PORT}>/g" /etc/apache2/sites-available/000-default.conf \
-    && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
-    && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+# Configuração do Apache
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
+    && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
+    && sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf \
+    && sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 
-# Configuração de permissões com verificação
+# Permissões seguras
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html -type f -exec chmod 644 {} \; \
-    && [ -d "/var/www/html/application/logs" ] && chmod 775 /var/www/html/application/logs \
-    && [ -d "/var/www/html/application/cache" ] && chmod 775 /var/www/html/application/cache
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD curl -f http://localhost:${PORT} || exit 1
+    && chmod 775 /var/www/html/application/logs \
+    && chmod 775 /var/www/html/application/cache
 
 EXPOSE ${PORT}
 CMD ["apache2-foreground"]

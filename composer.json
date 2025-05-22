@@ -1,48 +1,15 @@
 {
 	"name": "mlbaunilha/erp",
-	"description": "Sistema ERP da Empresa ML Baunilha",
+	"description": "Sistema ERP ML Baunilha",
 	"type": "project",
-	"homepage": "https://mlbaunilha-erp-production.up.railway.app",
-	"license": "MIT",
 	"require": {
-		"php": "^7.3 || ^8.0",
-		"codeigniter/framework": "3.1.*",
-		"ext-curl": "*",
-		"ext-pdo": "*",
-		"ext-mbstring": "*",
-		"ext-zip": "*"
-	},
-	"require-dev": {
-		"mikey179/vfsstream": "^1.6.10",
-		"phpunit/phpunit": "^9.5"
-	},
-	"suggest": {
-		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
+	  "php": "^8.0",
+	  "codeigniter/framework": "^3.1"
 	},
 	"autoload": {
-		"psr-4": {
-			"MlbaunilhaErp\\": "application/",
-			"MlbaunilhaErp\\Models\\": "application/models/"
-		},
-		"files": [
-			"application/helpers/common_helper.php"
-		]
-	},
-	"scripts": {
-		"post-install-cmd": [
-			"@fix-vfsstream"
-		],
-		"post-update-cmd": [
-			"@fix-vfsstream"
-		],
-		"fix-vfsstream": [
-			"php -r \"@file_put_contents('vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php', str_replace('name{0}', 'name[0]', @file_get_contents('vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php')));\""
-		]
-	},
-	"support": {
-		"email": "suporte@mlbaunilha.com.br"
-	},
-	"config": {
-		"platform-check": false
+	  "psr-4": {
+		"MlbaunilhaErp\\": "application/",
+		"MlbaunilhaErp\\Models\\": "application/models/"
+	  }
 	}
-}
+  }
