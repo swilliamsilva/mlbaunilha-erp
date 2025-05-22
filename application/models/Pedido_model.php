@@ -1,4 +1,8 @@
 <?php
+namespace MlbaunilhaErp\Models;
+use CI_Model;
+use Exception;
+
 class Pedido_model extends CI_Model {
 
     public function __construct() {

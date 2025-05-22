@@ -1,5 +1,6 @@
 <?php
-// models adicionados:
+namespace MlbaunilhaErp\Models;
+use CI_Model;
 class Cliente_model extends CI_Model {
     public function get_all() {
         return $this->db->get('clientes')->result();

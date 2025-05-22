@@ -35,5 +35,8 @@
 		"psr-4": {
 			"MlbaunilhaErp\\": "application/"
 		}
-	}
+	},
+	"files": [
+		"application/helpers/common_helper.php"
+	  ]
 }

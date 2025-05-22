@@ -1,4 +1,7 @@
 <?php
+namespace MlbaunilhaErp\Models;
+use CI_Model;
+use DateTime;
 class Cupom_model extends CI_Model {
 
     public function listar_todos() {

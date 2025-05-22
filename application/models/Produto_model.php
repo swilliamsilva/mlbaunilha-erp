@@ -1,4 +1,6 @@
 <?php
+namespace MlbaunilhaErp\Models;
+use CI_Model;
 class Produto_model extends CI_Model {
 
     // Lista de campos permitidos para inserção/atualização (whitelist)

@@ -3,7 +3,6 @@
 # ----------------------------
 FROM php:8.2-apache AS builder
 
-# Instala dependências do sistema
 RUN apt-get update && apt-get install -y \
     git unzip libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
     libzip-dev libonig-dev \
@@ -12,10 +11,8 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
-# Instala o Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copia o código e instala dependências
 WORKDIR /var/www/html
 COPY . .
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
@@ -31,31 +28,27 @@ ENV PORT=${PORT} \
     APACHE_RUN_USER=www-data \
     APACHE_RUN_GROUP=www-data
 
-# Configuração do Apache
-RUN sed -i "s/Listen 80/Listen 0.0.0.0:${PORT}/g" /etc/apache2/ports.conf \
-    && sed -i "s/<VirtualHost \*:80>/<VirtualHost 0.0.0.0:${PORT}>/g" /etc/apache2/sites-available/000-default.conf \
-    && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
-    && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+# Cria diretórios críticos
+RUN mkdir -p /var/www/html/application/logs \
+    && mkdir -p /var/www/html/application/cache
 
 # Copia conteúdo do builder
 COPY --from=builder /var/www/html/ /var/www/html/
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
-# Configuração de diretórios e permissões
-RUN mkdir -p /var/www/html/application/{logs,cache} \
-    && chown -R www-data:www-data /var/www/html \
+# Configuração do Apache
+RUN sed -i "s/Listen 80/Listen 0.0.0.0:${PORT}/g" /etc/apache2/ports.conf \
+    && sed -i "s/<VirtualHost \*:80>/<VirtualHost 0.0.0.0:${PORT}>/g" /etc/apache2/sites-available/000-default.conf \
+    && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
+    && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+# Permissões
+RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html -type f -exec chmod 644 {} \; \
     && chmod 775 /var/www/html/application/logs \
     && chmod 775 /var/www/html/application/cache
-
-# Configuração de logs do PHP
-RUN { \
-    echo 'error_log = /proc/self/fd/2'; \
-    echo 'log_errors = On'; \
-    echo 'error_reporting = E_ALL'; \
-    } > /usr/local/etc/php/conf.d/00-railway.ini
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:${PORT} || exit 1
