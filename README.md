@@ -26,6 +26,7 @@ railway login
 cd pasta/do/seu/projeto
 railway link
 cat /etc/apache2/ports.conf | grep 'Listen'
+
 Teste no cli
 railway up
 railway logs --follow
