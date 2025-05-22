@@ -94,3 +94,6 @@ $route['erro/error_db']  = 'Errors/error_db';
 // ROTA GENÉRICA (SEMPRE A ÚLTIMA!)
 // ====================
 $route['paginas/(:any)'] = 'Pages/view/$1';  // Ex: /paginas/sobre
+
+$route['test/error/(:any)'] = 'Test/trigger_error/$1';
+

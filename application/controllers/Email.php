@@ -1,71 +1,88 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-
 /**
- * @property CI_Email $email
  * @property Pedido_model $pedido
  * @property Cliente_model $cliente
  * @property CI_Email $email
+ * @property CI_Config $config
  */
-
-class Email extends CI_Controller {
+class Email_controller extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
         
-        // Carregar dependências
-        $this->load->model('Pedido_model', 'pedido', TRUE);
-        $this->load->model('Cliente_model', 'cliente', TRUE);
-        
-        // Configurar biblioteca de email
+        $this->load->model('Pedido_model', 'pedido');
+        $this->load->model('Cliente_model', 'cliente');
         $this->load->library('email');
+        $this->load->config('email');
+        
         $this->configurar_email();
     }
 
     public function enviar($pedido_id) {
         try {
+            $this->validar_pedido($pedido_id);
             $pedido = $this->pedido->obter_por_id($pedido_id);
             $cliente = $this->cliente->obter_por_id($pedido->cliente_id);
 
             $this->enviar_email_confirmacao($cliente, $pedido);
             
-            echo 'E-mail enviado com sucesso para ' . $cliente->email;
+            $this->json_response([
+                'success' => true,
+                'message' => 'E-mail enviado para ' . obfuscate_email($cliente->email)
+            ]);
             
         } catch (Exception $e) {
             log_message('error', 'Erro ao enviar email: ' . $e->getMessage());
-            echo 'Erro: ' . $e->getMessage();
+            $this->json_response([
+                'success' => false,
+                'error' => 'Falha no envio do e-mail'
+            ], 500);
         }
     }
 
     private function configurar_email() {
-        $config = [
-            'protocol'  => 'smtp',
-            'smtp_host' => 'smtp.seudominio.com',
-            'smtp_port' => 587,
-            'smtp_user' => 'contato@seudominio.com',
-            'smtp_pass' => 'sua_senha',
+        $this->email->initialize([
+            'protocol'  => $this->config->item('protocol'),
+            'smtp_host' => $this->config->item('smtp_host'),
+            'smtp_port' => $this->config->item('smtp_port'),
+            'smtp_user' => $this->config->item('smtp_user'),
+            'smtp_pass' => $this->config->item('smtp_pass'),
             'mailtype'  => 'html',
             'charset'   => 'utf-8',
-            'newline'   => "\r\n"
-        ];
-        $this->email->initialize($config);
+            'newline'   => "\r\n",
+            'smtp_crypto' => 'tls'
+        ]);
+    }
+
+    private function validar_pedido($pedido_id) {
+        if (!ctype_digit((string)$pedido_id)) {
+            throw new InvalidArgumentException('ID do pedido inválido');
+        }
     }
 
     private function enviar_email_confirmacao($cliente, $pedido) {
-        $this->email->from('loja@mlbaunilha.com', 'MLBaunilha');
+        $this->email->clear();
+        $this->email->from(
+            $this->config->item('from_email'), 
+            $this->config->item('from_name')
+        );
         $this->email->to($cliente->email);
-        $this->email->subject("Pedido #{$pedido->id} - Confirmação");
-        
-        $mensagem = $this->load->view('emails/confirmacao_pedido', [
-            'cliente' => $cliente,
-            'pedido' => $pedido
-        ], TRUE);
+        $this->email->bcc($this->config->item('bcc_email'));
+        $this->email->subject("Pedido #{$pedido->id} - Confirmação | " . date('d/m/Y'));
 
+        $dados = [
+            'cliente' => $cliente,
+            'pedido' => $pedido,
+            'data' => date('d/m/Y H:i')
+        ];
+
+        $mensagem = $this->load->view('emails/confirmacao_pedido', $dados, TRUE);
         $this->email->message($mensagem);
 
         if (!$this->email->send()) {
-            throw new Exception('Falha no envio: ' . $this->email->print_debugger());
+            throw new RuntimeException($this->email->print_debugger(['headers', 'subject', 'body']));
         }
     }
 }

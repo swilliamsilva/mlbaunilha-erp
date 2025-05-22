@@ -2,76 +2,92 @@
     RewriteEngine On
     RewriteBase /
     
-    # Bloqueia acesso a arquivos ocultos e sensíveis
-    RewriteRule (^\.|/\.) - [F]
-    RewriteRule ^(composer\.lock|package\.json|\.env|\.gitignore|\.htaccess) - [F,L]
-
-    # Redirecionamento HTTPS (habilitar em produção)
+    # Força HTTPS em produção (descomente na hospedagem)
     # RewriteCond %{HTTPS} !=on
-    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-    # Redireciona para front controller
+    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,NE,R=301]
+    
+    # Bloqueia acesso a arquivos sensíveis
+    RewriteRule ^\. - [F]
+    RewriteRule (composer\.(json|lock)|package(-lock)?\.json|\.env.*|\.git.*|\.htaccess) - [F,NC,L]
+    
+    # Front Controller
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
 </IfModule>
 
-<FilesMatch "\.(env|sql|ini|bak|conf|key|log|lock|md|yml|phar|twig)$">
-    <IfModule authz_core_module>
+<FilesMatch "\.(env|sql|ini|bak|conf|key|log|lock|md|yml|phar|twig|sh|json)$">
+    <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
-    <IfModule !authz_core_module>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
         Deny from all
     </IfModule>
 </FilesMatch>
 
-<DirectoryMatch "(^|/)(system|vendor|node_modules|tests|config|logs)">
-    <IfModule authz_core_module>
+<DirectoryMatch "(^|/)(\.git|vendor|node_modules|tests|config|logs|storage|application/core)">
+    <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
-    <IfModule !authz_core_module>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
         Deny from all
     </IfModule>
 </DirectoryMatch>
 
-# Configurações de segurança
+# Headers de segurança
 <IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set X-XSS-Protection "1; mode=block"
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Content-Security-Policy "default-src 'self'"
+    Header always set Permissions-Policy "geolocation=(), microphone=()"
+    
+    # HSTS (habilitar com HTTPS)
+    # Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 </IfModule>
 
-# Configuração de cache (ajustar valores conforme necessidade)
+# Cache e compressão
 <IfModule mod_expires.c>
     ExpiresActive On
+    ExpiresDefault "access plus 1 month"
     ExpiresByType image/jpg "access plus 1 year"
     ExpiresByType image/webp "access plus 1 year"
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
-# Impede listagem de diretórios
-Options -Indexes
-Options -MultiViews
-Options +FollowSymLinks
-
-# Configurações PHP (desenvolvimento vs produção)
-<IfModule mod_php7.c>
-    # Para produção:
-    # php_flag display_errors off
-    # php_flag log_errors on
-    # php_value error_log "/caminho/absoluto/application/logs/php_errors.log"
-    
-    # Para desenvolvimento:
-    php_flag display_errors on
-    php_flag display_startup_errors on
-    php_value error_reporting E_ALL
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript font/woff2
 </IfModule>
 
-# Tratamento de erros personalizado
-ErrorDocument 400 /errors/bad_request
-ErrorDocument 401 /errors/unauthorized
-ErrorDocument 403 /errors/forbidden
-ErrorDocument 404 /errors/not_found
-ErrorDocument 500 /errors/server_error
+# Configurações de diretório
+Options -Indexes -MultiViews +FollowSymLinksIfOwnerMatch
+
+# Configurações PHP unificadas
+<IfModule php_module>
+    php_value max_execution_time 30
+    php_value memory_limit 128M
+    php_flag display_errors Off
+    php_flag display_startup_errors Off
+    php_flag log_errors On
+    php_value error_log "application/logs/php_errors.log"
+</IfModule>
+
+# Tratamento de erros
+ErrorDocument 400 /index.php?/errors/bad_request
+ErrorDocument 401 /index.php?/errors/unauthorized
+ErrorDocument 403 /index.php?/errors/forbidden
+ErrorDocument 404 /index.php?/errors/not_found
+ErrorDocument 500 /index.php?/errors/server_error
+
+# Proteção contra injection
+<IfModule mod_rewrite.c>
+    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
+    RewriteRule ^(.*)$ - [F,L]
+</IfModule>

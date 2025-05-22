@@ -47,5 +47,12 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod 775 /var/www/html/application/logs \
     && chmod 775 /var/www/html/application/cache
 
+# Garanta que os logs são persistidos
+RUN ln -sf /dev/stdout /var/www/html/application/logs/log-$(date +%Y-%m-%d).log \
+    && ln -sf /dev/stderr /var/www/html/application/logs/error-$(date +%Y-%m-%d).log
+
+# Permissões de logs
+RUN chmod -R 777 /var/www/html/application/logs
+
 EXPOSE ${PORT}
 CMD ["apache2-foreground"]

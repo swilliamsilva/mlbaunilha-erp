@@ -79,4 +79,6 @@ e neste caso basta digitar
 webhook_test.sql que um teste para os arquivos do sql. Este pode ser importado
 no phpadmin.
 
-
+# Test enviar email
+// Exemplo de chamada
+$ curl http://seusite.com/email_controller/enviar/123

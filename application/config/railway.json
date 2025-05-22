@@ -10,5 +10,12 @@
 			"src": "/(.*)",
 			"dest": "/public/$1"
 		}
-	]
+	],
+	"checks": {
+		"http": {
+		  "path": "/health/check",
+		  "interval": 30,
+		  "timeout": 5
+		}
+	}
 }

@@ -41,6 +41,12 @@ $config['log_threshold'] = 4;  // Ativa todos os níveis de log (0 = desligado)
 $config['log_path'] = '';      // Deixe vazio para usar `application/logs`
 $config['index_page'] = 'index.php';
 
+$config['log_threshold'] = (ENVIRONMENT === 'production') ? 1 : 4;
+$config['log_path'] = APPPATH.'logs/';
+$config['log_file_extension'] = 'log';
+$config['log_file_permissions'] = 0644;
+$config['log_date_format'] = 'Y-m-d H:i:s.u';
+
 /*
 |--------------------------------------------------------------------------
 | URI PROTOCOL
