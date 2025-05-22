@@ -1,18 +1,17 @@
 {
-	"build": {
-	  "builder": "dockerfile",
-	  "dockerfilePath": "Dockerfile",
-	  "nixpacksPlan": {
-		"phases": {
-		  "setup": {
-			"aptPackages": ["libzip-dev"]
-		  },
-		  "install": {
-			"commands": [
-			  "docker-php-ext-configure zip",
-			  "docker-php-ext-install zip"
-			]
-		  }
+	"builds": [
+	  {
+		"builder": "dockerfile",
+		"dockerfilePath": "Dockerfile",
+		"watchPatterns": ["**/*"]
+	  }
+	],
+	"environments": {
+	  "production": {
+		"variables": {
+		  "PORT": "10000",
+		  "APP_ENV": "production",
+		  "APP_DEBUG": "false"
 		}
 	  }
 	}

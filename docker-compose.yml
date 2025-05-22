@@ -1,72 +1,28 @@
-version: "3.8"
+version: '3.8'
 
 services:
   app:
-    container_name: mlbaunilha-erp
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     ports:
       - "10000:10000"
     environment:
       - PORT=10000
-      - PHP_DISPLAY_ERRORS=On          # Para desenvolvimento
-      - PHP_ERROR_REPORTING=-1         # E_ALL em formato numérico
-      - APP_ENV=local                  # Ambiente de desenvolvimento
-      - APP_DEBUG=true                 # Apenas para desenvolvimento
-      - TZ=America/Sao_Paulo          # Fuso horário
-    volumes:
-      - ./application:/var/www/html/application  # Apenas código fonte
-      - ./public:/var/www/html/public
-    # Remova o volume raiz para evitar conflitos
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:10000/"]
-      interval: 30s
-      timeout: 5s                      # Aumente o timeout
-      retries: 3
-    networks:
-      - erp-network
+      - DB_HOST=db
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
     depends_on:
       db:
         condition: service_healthy
 
   db:
     image: mysql:8.0
-    container_name: mlbaunilha-db
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=erp
-      - MYSQL_USER=erp_user
-      - MYSQL_PASSWORD=secret
-    volumes:
-      - db_data:/var/lib/mysql
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: erp
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - erp-network
     ports:
       - "3306:3306"
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: mlbaunilha-pma
-    depends_on:
-      - db
-    environment:
-      - PMA_HOST=db
-      - PMA_USER=root
-      - PMA_PASSWORD=root
-    ports:
-      - "8080:80"
-    networks:
-      - erp-network
-
-networks:
-  erp-network:
-    driver: bridge
-
-volumes:
-  db_data:
