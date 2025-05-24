@@ -1,13 +1,12 @@
 #!/bin/bash
 set -e
 
-echo "🚀 docker-entrypoint.sh iniciado! Porta recebida: ${PORT}"
+# Usar porta dinâmica do Railway
+PORT=${PORT:-80}
 
-if [[ -n "${PORT}" ]]; then
-  sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
-  sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/" /etc/apache2/sites-available/000-default.conf
-else
-  echo "⚠️ Variável \$PORT não está definida!DEFINITIVAMENTE"
-fi
+echo "🔧 Configurando Apache na porta: $PORT"
+
+sed -i "s|Listen 80|Listen ${PORT}|g" /etc/apache2/ports.conf
+sed -i "s|:80>|:${PORT}>|g" /etc/apache2/sites-available/*.conf
 
 exec "$@"
