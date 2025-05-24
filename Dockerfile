@@ -55,6 +55,6 @@ RUN ln -sf /dev/stdout /var/www/html/application/logs/log-$(date +%Y-%m-%d).log 
 EXPOSE 8080
 
 RUN echo "PROXIMA EXECUÇÃO É O ENTRYPOINT"
-RUN ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 CMD ["apache2-foreground"]
