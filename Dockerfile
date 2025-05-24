@@ -36,6 +36,10 @@ COPY --from=builder /var/www/html/ /var/www/html/
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+RUN echo "PROXIMA EXECUÇÃO É O ENTRYPOINT"
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
 # Configuração padrão + permissões
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
@@ -54,7 +58,5 @@ RUN ln -sf /dev/stdout /var/www/html/application/logs/log-$(date +%Y-%m-%d).log 
 # Porta default para expor (não fixa, mas útil localmente)
 EXPOSE 8080
 
-RUN echo "PROXIMA EXECUÇÃO É O ENTRYPOINT"
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 CMD ["apache2-foreground"]
