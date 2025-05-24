@@ -1,15 +1,15 @@
 #!/bin/bash
 set -e
 
-# Forçar criação dos diretórios se necessário
+# Forçar criação dos diretórios críticos
 mkdir -p /var/www/html/application/logs
 mkdir -p /var/www/html/application/cache
+chmod 775 /var/www/html/application/logs
+chmod 775 /var/www/html/application/cache
 
-echo "🔧 Configurando Apache na porta ${PORT:-8080}"
-
-# Usar PORT do Railway ou 8080 localmente
-sed -i "s|Listen 80|Listen ${PORT:-8080}|g" /etc/apache2/ports.conf
-sed -i "s|:80>|:${PORT:-8080}>|g" /etc/apache2/sites-available/*.conf
+echo "🔧 Configurando Apache na porta ${PORT}"
+sed -i "s|Listen 80|Listen ${PORT}|g" /etc/apache2/ports.conf
+sed -i "s|:80>|:${PORT}>|g" /etc/apache2/sites-available/*.conf
 
 echo "✅ Configuração concluída"
 exec "$@"
