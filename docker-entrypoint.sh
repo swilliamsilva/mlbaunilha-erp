@@ -1,17 +1,17 @@
 #!/bin/bash
 set -e
 
-# Validação crítica da variável PORT
-if [ -z "$PORT" ]; then
-  echo "❌ ERRO: Variável PORT não está definida!"
+# Validação obrigatória da variável PORT
+if [ -z "${PORT}" ]; then
+  echo "❌ ERRO FATAL: Variável PORT não definida!"
   exit 1
 fi
 
-echo "🔧 Configurando Apache na porta: $PORT"
+echo "🔧 Configurando Apache na porta ${PORT}"
 
-# Substituição segura usando delimitadores alternativos
-sed -i "s|Listen 80|Listen $PORT|g" /etc/apache2/ports.conf
-sed -i "s|:80>|:$PORT>|g" /etc/apache2/sites-available/*.conf
+# Substituições seguras usando delimitadores alternativos
+sed -i "s|Listen 80|Listen ${PORT}|g" /etc/apache2/ports.conf
+sed -i "s|:80>|:${PORT}>|g" /etc/apache2/sites-available/*.conf
 
-echo "✅ Configuração concluída. Iniciando Apache..."
+echo "✅ Configuração concluída. Iniciando servidor..."
 exec "$@"
