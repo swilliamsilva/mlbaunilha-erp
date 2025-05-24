@@ -54,5 +54,6 @@ RUN ln -sf /dev/stdout /var/www/html/application/logs/log-$(date +%Y-%m-%d).log 
 # Porta default para expor (não fixa, mas útil localmente)
 EXPOSE 8080
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
 CMD ["apache2-foreground"]
